@@ -14,7 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 용도: 제품 옵션 정보 저장
+ * 용도: 제품 옵션 정보 저장.
  * 제품별 이름, 색상이나 용량 등의 구분값과 가격처럼 옵션마다 달라질 수 있는 정보를 관리한다.
  */
 @Getter
@@ -41,7 +41,7 @@ public class ProductOption {
     private int price;
 
     /**
-     * 용도: 제품 옵션 생성
+     * 용도: 제품 옵션 생성.
      * 옵션별 제품명, 구분값과 가격을 설정하며 소속 제품은 Product.addOption으로 연결한다.
      */
     public ProductOption(String optionName, String optionLabel, int price) {
@@ -51,7 +51,7 @@ public class ProductOption {
     }
 
     /**
-     * 용도: 소속 제품 설정
+     * 용도: 소속 제품 설정.
      * Product가 옵션을 추가할 때 외래 키 연관관계를 함께 설정한다.
      */
     void assignProduct(Product product) {

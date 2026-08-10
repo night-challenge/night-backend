@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 용도: 제품 공통 정보 저장
+ * 용도: 제품 공통 정보 저장.
  * 옵션에 따라 달라지지 않는 카테고리와 제품 설명을 관리하고 여러 제품 옵션을 하나의 제품으로 묶는다.
  */
 @Getter
@@ -43,7 +43,7 @@ public class Product {
     private List<ProductOption> options = new ArrayList<>();
 
     /**
-     * 용도: 제품 생성
+     * 용도: 제품 생성.
      * 제품 옵션들이 공통으로 사용하는 카테고리와 설명을 설정한다.
      */
     public Product(ProductCategory category, String description) {
@@ -52,7 +52,7 @@ public class Product {
     }
 
     /**
-     * 용도: 제품 옵션 연결
+     * 용도: 제품 옵션 연결.
      * 제품과 옵션의 양방향 연관관계를 한 번에 설정하여 서로 다른 상태로 저장되는 것을 방지한다.
      */
     public void addOption(ProductOption option) {
@@ -61,7 +61,7 @@ public class Product {
     }
 
     /**
-     * 용도: 제품 옵션 목록 조회
+     * 용도: 제품 옵션 목록 조회.
      * 외부에서 연관관계 컬렉션을 직접 변경하지 못하도록 읽기 전용 목록을 반환한다.
      */
     public List<ProductOption> getOptions() {
