@@ -62,7 +62,7 @@ class ProductServiceTest {
     @DisplayName("카테고리별 옵션 목록을 명세의 DTO로 변환한다")
     void getProductOptions() {
         Product product = new Product(ProductCategory.BAG, "가방 설명");
-        ProductOption option = new ProductOption("Aren 비세토스 스쿨 토트", "갈색", 1_250_000);
+        ProductOption option = new ProductOption("L Aren 비세토스 스쿨 토트", "갈색", 1_250_000);
         product.addOption(option);
         ReflectionTestUtils.setField(option, "id", 1L);
 
@@ -73,7 +73,7 @@ class ProductServiceTest {
 
         assertThat(response.options()).hasSize(1);
         assertThat(response.options().get(0).id()).isEqualTo(1L);
-        assertThat(response.options().get(0).optionName()).isEqualTo("Aren 비세토스 스쿨 토트");
+        assertThat(response.options().get(0).optionName()).isEqualTo("L Aren 비세토스 스쿨 토트");
         assertThat(response.options().get(0).optionLabel()).isEqualTo("갈색");
         assertThat(response.options().get(0).price()).isEqualTo(1_250_000);
     }
@@ -117,7 +117,7 @@ class ProductServiceTest {
     @DisplayName("제품 옵션 상세 정보를 명세의 DTO로 변환한다")
     void getProductOption() {
         Product product = new Product(ProductCategory.TRAVEL, "여행에 적합한 수트케이스입니다.");
-        ProductOption option = new ProductOption("L 비세토스 수트케이스", "갈색", 2_150_000);
+        ProductOption option = new ProductOption("L 비세토스 수트케이스", "갈색", 6_750_000);
         product.addOption(option);
         ReflectionTestUtils.setField(option, "id", 5L);
 
@@ -128,7 +128,7 @@ class ProductServiceTest {
         assertThat(response.id()).isEqualTo(5L);
         assertThat(response.optionName()).isEqualTo("L 비세토스 수트케이스");
         assertThat(response.optionLabel()).isEqualTo("갈색");
-        assertThat(response.price()).isEqualTo(2_150_000);
+        assertThat(response.price()).isEqualTo(6_750_000);
         assertThat(response.description()).isEqualTo("여행에 적합한 수트케이스입니다.");
     }
 
