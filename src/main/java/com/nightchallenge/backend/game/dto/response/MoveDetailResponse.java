@@ -1,6 +1,5 @@
 package com.nightchallenge.backend.game.dto.response;
 
-import com.github.bhlangonijr.chesslib.PieceType;
 import com.nightchallenge.backend.game.service.GameMoveService;
 
 /**
@@ -19,7 +18,7 @@ public record MoveDetailResponse(
      * 이동 처리 결과를 API 명세의 camelCase 응답으로 변환하며, 캡처가 없으면 captured를 null로 반환한다.
      */
     public static MoveDetailResponse from(GameMoveService.MoveOutcome outcome) {
-        String captured = outcome.capturedPieceType() == PieceType.NONE
+        String captured = outcome.capturedPieceType() == null
                 ? null
                 : outcome.capturedPieceType().name();
 

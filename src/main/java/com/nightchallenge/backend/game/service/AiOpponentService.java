@@ -1,6 +1,7 @@
 package com.nightchallenge.backend.game.service;
 
 import com.github.bhlangonijr.chesslib.Board;
+import com.github.bhlangonijr.chesslib.Piece;
 import com.github.bhlangonijr.chesslib.PieceType;
 import com.github.bhlangonijr.chesslib.Side;
 import com.github.bhlangonijr.chesslib.move.Move;
@@ -69,18 +70,21 @@ public class AiOpponentService {
      */
     private boolean threatensUserKnight(Board board) {
         return board.legalMoves().stream()
-                .anyMatch(nextMove -> board.getPiece(nextMove.getTo()).getPieceType() == PieceType.KNIGHT
-                        && board.getPiece(nextMove.getTo()).getPieceSide() == Side.WHITE);
+                .anyMatch(nextMove -> {
+                    Piece target = board.getPiece(nextMove.getTo());
+                    return target.getPieceType() == PieceType.KNIGHT && target.getPieceSide() == Side.WHITE;
+                });
     }
 
     /**
      * 용도: AI 기물 노출 여부 확인.
      * AI 이동 후 보드에서, 사용자(백)의 나이트가 다음 수에 AI(흑) 기물을 잡을 수 있는 상태인지 확인한다.
+     * 빈 칸 여부는 Piece.NONE과의 동등 비교로 판단한다.
      */
     private boolean exposesToUserKnightCapture(Board board) {
         return board.legalMoves().stream()
                 .filter(nextMove -> board.getPiece(nextMove.getFrom()).getPieceType() == PieceType.KNIGHT)
-                .anyMatch(nextMove -> board.getPiece(nextMove.getTo()).getPieceType() != PieceType.NONE);
+                .anyMatch(nextMove -> !board.getPiece(nextMove.getTo()).equals(Piece.NONE));
     }
 
     /**

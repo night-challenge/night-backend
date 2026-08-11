@@ -72,6 +72,8 @@ public class GameMoveService {
      * 용도: 보드에 이동 한 번 적용.
      * 합법적인 이동인지 검증한 뒤 실행하고, 나이트로 캡처했을 때만 점수를 계산하며,
      * 나이트가 이동했다면 캡처 여부와 관계없이 궤적을 기록한다.
+     * 빈 칸 여부는 Piece.NONE과의 동등 비교로 판단한다. Piece.NONE.getPieceType()은 null을 반환하므로
+     * PieceType과 직접 비교하면 안 된다.
      */
     private MoveOutcome applyMove(Board board, GameSession session, Move move) {
         if (!board.legalMoves().contains(move)) {
@@ -80,13 +82,18 @@ public class GameMoveService {
 
         Piece movingPiece = board.getPiece(move.getFrom());
         Piece capturedPiece = board.getPiece(move.getTo());
+        boolean isCapture = !capturedPiece.equals(Piece.NONE);
         boolean isKnightMove = movingPiece.getPieceType() == PieceType.KNIGHT;
 
         board.doMove(move);
 
         int gainedScore = 0;
-        if (isKnightMove && capturedPiece.getPieceType() != PieceType.NONE) {
-            gainedScore = scoreTable.getPoint(session.getMode(), capturedPiece.getPieceType());
+        PieceType capturedPieceType = null;
+        if (isCapture) {
+            capturedPieceType = capturedPiece.getPieceType();
+            if (isKnightMove) {
+                gainedScore = scoreTable.getPoint(session.getMode(), capturedPieceType);
+            }
         }
 
         if (isKnightMove) {
@@ -98,7 +105,7 @@ public class GameMoveService {
             );
         }
 
-        return new MoveOutcome(move, capturedPiece.getPieceType(), gainedScore);
+        return new MoveOutcome(move, capturedPieceType, gainedScore);
     }
 
     /**
@@ -120,7 +127,7 @@ public class GameMoveService {
 
     /**
      * 용도: 한 번의 기물 이동 결과 표현.
-     * 실행된 이동, 잡힌 기물 종류, 획득 점수를 담는다.
+     * 실행된 이동, 잡힌 기물 종류(캡처가 없으면 null), 획득 점수를 담는다.
      */
     public record MoveOutcome(Move move, PieceType capturedPieceType, int gainedScore) {
     }
