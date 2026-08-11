@@ -1,12 +1,12 @@
 package com.nightchallenge.backend.engraving.domain.converter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nightchallenge.backend.global.exception.BusinessException;
 import com.nightchallenge.backend.global.exception.ErrorCode;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ import java.util.List;
 @Converter
 public class StringListJsonConverter implements AttributeConverter<List<String>, String> {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final JsonMapper JSON_MAPPER = JsonMapper.shared();
 
     /**
      * 용도: 엔티티 값을 DB 저장용 JSON 문자열로 변환.
@@ -26,8 +26,8 @@ public class StringListJsonConverter implements AttributeConverter<List<String>,
     @Override
     public String convertToDatabaseColumn(List<String> attribute) {
         try {
-            return OBJECT_MAPPER.writeValueAsString(attribute);
-        } catch (JsonProcessingException exception) {
+            return JSON_MAPPER.writeValueAsString(attribute);
+        } catch (JacksonException exception) {
             throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "keywords 직렬화에 실패했습니다.");
         }
     }
@@ -39,8 +39,8 @@ public class StringListJsonConverter implements AttributeConverter<List<String>,
     @Override
     public List<String> convertToEntityAttribute(String dbData) {
         try {
-            return OBJECT_MAPPER.readValue(dbData, new TypeReference<List<String>>() {});
-        } catch (JsonProcessingException exception) {
+            return JSON_MAPPER.readValue(dbData, new TypeReference<List<String>>() {});
+        } catch (JacksonException exception) {
             throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "keywords 역직렬화에 실패했습니다.");
         }
     }
