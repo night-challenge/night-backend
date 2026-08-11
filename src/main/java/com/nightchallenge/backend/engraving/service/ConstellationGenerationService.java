@@ -43,7 +43,7 @@ public class ConstellationGenerationService {
      */
     public ConstellationData generate(List<KnightMoveLog> knightMoveLog) {
         ConstellationShape before = buildBefore(knightMoveLog);
-        ConstellationShape after = buildAfter(before);
+        ConstellationShape after = regenerateAfter(before);
         return new ConstellationData(before, after);
     }
 
@@ -75,11 +75,13 @@ public class ConstellationGenerationService {
     }
 
     /**
-     * 용도: 최종 별자리(after) 구성.
+     * 용도: 최종 별자리(after) 구성 및 재생성.
      * before의 격자 좌표를 캔버스 좌표로 변환하며 중복 좌표를 하나의 점으로 합치고,
      * 점을 보강한 뒤 최근접 이웃 방식으로 연결 관계를 새로 만들고, 분리된 그룹을 다리로 이어 붙인다.
+     * 밀도 보정과 연결 관계 선택에 무작위 요소가 있어, 동일한 before로 다시 호출해도 매번 다른 모양이 나온다.
+     * "다시 생성하기" 기능(화면 5.1)에서 이 메서드를 그대로 재사용한다.
      */
-    private ConstellationShape buildAfter(ConstellationShape before) {
+    public ConstellationShape regenerateAfter(ConstellationShape before) {
         List<ConstellationPoint> points = dedupAndScaleToCanvas(before.points());
         densify(points);
 

@@ -1,6 +1,7 @@
 package com.nightchallenge.backend.engraving.service;
 
 import com.nightchallenge.backend.engraving.domain.ConstellationData;
+import com.nightchallenge.backend.engraving.domain.ConstellationShape;
 import com.nightchallenge.backend.engraving.domain.NightPathRecord;
 import com.nightchallenge.backend.engraving.repository.NightPathRecordRepository;
 import com.nightchallenge.backend.game.domain.GameSession;
@@ -13,8 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 용도: 각인(별자리) 생성.
+ * 용도: 각인(별자리) 생성 및 재생성.
  * 승리한 게임 세션의 나이트 이동 궤적을 별자리로 재구성하고, 플레이 분석 결과와 함께 각인을 생성해 저장한다.
+ * 또한 이미 생성된 각인의 최종 별자리(after)를 원본 궤적(before)은 유지한 채 다시 생성한다.
  */
 @Service
 @RequiredArgsConstructor
@@ -55,5 +57,22 @@ public class EngravingService {
         );
 
         return nightPathRecordRepository.save(record);
+    }
+
+    /**
+     * 용도: 각인 별자리 재생성.
+     * 기존 각인의 원본 이동 궤적(before)은 그대로 유지한 채, 재구성 로직을 다시 실행해
+     * 최종 별자리(after)만 새로운 모양으로 교체한다. 존재하지 않는 각인이면 404 예외를 발생시킨다.
+     */
+    public NightPathRecord regenerate(Long engravingId) {
+        NightPathRecord record = nightPathRecordRepository.findById(engravingId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ENGRAVING_NOT_FOUND));
+
+        ConstellationShape currentBefore = record.getConstellationData().before();
+        ConstellationShape newAfter = constellationGenerationService.regenerateAfter(currentBefore);
+
+        record.regenerateAfter(newAfter);
+
+        return record;
     }
 }
