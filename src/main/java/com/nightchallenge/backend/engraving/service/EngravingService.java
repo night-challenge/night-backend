@@ -1,0 +1,59 @@
+package com.nightchallenge.backend.engraving.service;
+
+import com.nightchallenge.backend.engraving.domain.ConstellationData;
+import com.nightchallenge.backend.engraving.domain.NightPathRecord;
+import com.nightchallenge.backend.engraving.repository.NightPathRecordRepository;
+import com.nightchallenge.backend.game.domain.GameSession;
+import com.nightchallenge.backend.game.domain.GameStatus;
+import com.nightchallenge.backend.game.service.GameService;
+import com.nightchallenge.backend.global.exception.BusinessException;
+import com.nightchallenge.backend.global.exception.ErrorCode;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * 용도: 각인(별자리) 생성.
+ * 승리한 게임 세션의 나이트 이동 궤적을 별자리로 재구성하고, 플레이 분석 결과와 함께 각인을 생성해 저장한다.
+ */
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class EngravingService {
+
+    private final GameService gameService;
+    private final ConstellationGenerationService constellationGenerationService;
+    private final PlayAnalyzer playAnalyzer;
+    private final NightPathRecordRepository nightPathRecordRepository;
+
+    /**
+     * 로그인 기능 도입 전까지 사용하는 고정 사용자 식별자.
+     */
+    private static final Long TEMP_USER_ID = 1L;
+
+    /**
+     * 용도: 게임 승리 결과로 각인 생성.
+     * 승리한 게임 세션의 나이트 이동 궤적을 별자리로 재구성하고, 플레이 분석 결과와 함께
+     * 새 각인(NightPathRecord)을 생성해 저장한다. 승리한 게임이 아니면 예외를 발생시킨다.
+     */
+    public NightPathRecord createFromGameSession(Long gameSessionId) {
+        GameSession session = gameService.getGameSession(gameSessionId);
+
+        if (session.getStatus() != GameStatus.WON) {
+            throw new BusinessException(ErrorCode.INVALID_REQUEST, "승리한 게임에서만 각인을 생성할 수 있습니다.");
+        }
+
+        ConstellationData constellationData = constellationGenerationService.generate(session.getKnightMoveLog());
+        PlayAnalysisResult analysis = playAnalyzer.analyze(session);
+
+        NightPathRecord record = new NightPathRecord(
+                TEMP_USER_ID,
+                analysis.constellationName(),
+                analysis.keywords(),
+                analysis.comment(),
+                constellationData
+        );
+
+        return nightPathRecordRepository.save(record);
+    }
+}

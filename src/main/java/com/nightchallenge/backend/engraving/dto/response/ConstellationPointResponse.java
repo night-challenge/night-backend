@@ -9,4 +9,12 @@ public record ConstellationPointResponse(
         int x,
         int y
 ) {
+
+    /**
+     * 용도: 별자리 점 DTO 변환.
+     * 도메인의 ConstellationPoint를 API 명세의 응답으로 변환한다.
+     */
+    public static ConstellationPointResponse from(com.nightchallenge.backend.engraving.domain.ConstellationPoint point) {
+        return new ConstellationPointResponse(point.id(), point.x(), point.y());
+    }
 }

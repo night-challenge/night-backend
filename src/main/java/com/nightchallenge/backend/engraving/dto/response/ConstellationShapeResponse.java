@@ -21,4 +21,16 @@ public record ConstellationShapeResponse(
                 .map(List::copyOf)
                 .toList();
     }
+
+    /**
+     * 용도: 별자리 모양 DTO 변환.
+     * 도메인의 ConstellationShape를 API 명세의 응답으로 변환한다.
+     */
+    public static ConstellationShapeResponse from(com.nightchallenge.backend.engraving.domain.ConstellationShape shape) {
+        List<ConstellationPointResponse> points = shape.points().stream()
+                .map(ConstellationPointResponse::from)
+                .toList();
+
+        return new ConstellationShapeResponse(points, shape.connections());
+    }
 }
