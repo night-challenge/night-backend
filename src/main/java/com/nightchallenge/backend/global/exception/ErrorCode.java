@@ -11,6 +11,8 @@ public enum ErrorCode {
 
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 데이터를 찾을 수 없습니다."),
+    ENGRAVING_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 각인입니다."),
+    ENGRAVING_NAME_UNCHANGED(HttpStatus.BAD_REQUEST, "변경된 사항이 없습니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
 
     private final HttpStatus httpStatus;
