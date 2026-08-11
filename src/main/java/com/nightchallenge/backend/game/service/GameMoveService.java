@@ -38,7 +38,7 @@ public class GameMoveService {
         board.loadFromFen(session.getFen());
 
         Move userMove = createMove(fromSquare, toSquare);
-        MoveOutcome userOutcome = applyMove(board, session, userMove);
+        MoveOutcome userOutcome = applyMove(board, session, userMove, true);
 
         session.applyMoveResult(userOutcome.gainedScore(), board.getFen(), determineStatus(session, board));
 
@@ -46,7 +46,7 @@ public class GameMoveService {
         if (session.getStatus() == GameStatus.IN_PROGRESS) {
             Move aiMove = aiOpponentService.selectMove(board);
             if (aiMove != null) {
-                aiOutcome = applyMove(board, session, aiMove);
+                aiOutcome = applyMove(board, session, aiMove, false);
                 session.applyMoveResult(0, board.getFen(), determineStatus(session, board));
             }
         }
@@ -70,12 +70,12 @@ public class GameMoveService {
 
     /**
      * 용도: 보드에 이동 한 번 적용.
-     * 합법적인 이동인지 검증한 뒤 실행하고, 나이트로 캡처했을 때만 점수를 계산하며,
-     * 나이트가 이동했다면 캡처 여부와 관계없이 궤적을 기록한다.
+     * 합법적인 이동인지 검증한 뒤 실행하고, 나이트로 캡처했을 때만 점수를 계산한다.
+     * 나이트 이동 궤적은 사용자의 이동일 때만 기록하며, AI의 나이트 이동은 궤적에 포함하지 않는다.
      * 빈 칸 여부는 Piece.NONE과의 동등 비교로 판단한다. Piece.NONE.getPieceType()은 null을 반환하므로
      * PieceType과 직접 비교하면 안 된다.
      */
-    private MoveOutcome applyMove(Board board, GameSession session, Move move) {
+    private MoveOutcome applyMove(Board board, GameSession session, Move move, boolean isUserMove) {
         if (!board.legalMoves().contains(move)) {
             throw new BusinessException(ErrorCode.INVALID_MOVE);
         }
@@ -91,12 +91,12 @@ public class GameMoveService {
         PieceType capturedPieceType = null;
         if (isCapture) {
             capturedPieceType = capturedPiece.getPieceType();
-            if (isKnightMove) {
+            if (isKnightMove && isUserMove) {
                 gainedScore = scoreTable.getPoint(session.getMode(), capturedPieceType);
             }
         }
 
-        if (isKnightMove) {
+        if (isKnightMove && isUserMove) {
             session.recordKnightMove(
                     move.getFrom().getFile().ordinal(),
                     move.getFrom().getRank().ordinal(),
