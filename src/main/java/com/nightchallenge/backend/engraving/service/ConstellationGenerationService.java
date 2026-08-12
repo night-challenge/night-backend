@@ -50,6 +50,8 @@ public class ConstellationGenerationService {
     /**
      * 용도: 원본 궤적(before) 구성.
      * 이동 순서대로 새 id를 부여하며, 같은 칸을 다시 방문해도 별개의 점으로 취급해 실제 이동 순서를 보존한다.
+     * 체스는 나이트가 두 개이므로, 이전 이동의 도착 칸과 다음 이동의 출발 칸이 다르면(다른 나이트로 전환된 것)
+     * 두 이동을 잇지 않고 새로운 시작점으로 별도 경로를 시작한다.
      */
     private ConstellationShape buildBefore(List<KnightMoveLog> logs) {
         List<ConstellationPoint> points = new ArrayList<>();
@@ -60,14 +62,27 @@ public class ConstellationGenerationService {
         }
 
         int id = 0;
-        points.add(new ConstellationPoint(id, logs.get(0).fromX(), logs.get(0).fromY()));
+        KnightMoveLog firstLog = logs.get(0);
+        points.add(new ConstellationPoint(id, firstLog.fromX(), firstLog.fromY()));
         int previousId = id;
+        int previousToX = firstLog.fromX();
+        int previousToY = firstLog.fromY();
         id++;
 
         for (KnightMoveLog log : logs) {
+            boolean isNewKnightPath = log.fromX() != previousToX || log.fromY() != previousToY;
+
+            if (isNewKnightPath) {
+                points.add(new ConstellationPoint(id, log.fromX(), log.fromY()));
+                previousId = id;
+                id++;
+            }
+
             points.add(new ConstellationPoint(id, log.toX(), log.toY()));
             connections.add(List.of(previousId, id));
             previousId = id;
+            previousToX = log.toX();
+            previousToY = log.toY();
             id++;
         }
 

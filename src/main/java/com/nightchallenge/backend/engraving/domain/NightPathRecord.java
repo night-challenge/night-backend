@@ -36,6 +36,12 @@ public class NightPathRecord {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
+    /**
+     * 이 각인을 생성한 게임 세션 식별자. 동일한 게임 세션으로 각인이 중복 생성되는 것을 막기 위해 사용한다.
+     */
+    @Column(name = "game_session_id", nullable = false, unique = true)
+    private Long gameSessionId;
+
     @Column(name = "constellation_name", nullable = false)
     private String constellationName;
 
@@ -59,12 +65,14 @@ public class NightPathRecord {
      */
     public NightPathRecord(
             Long userId,
+            Long gameSessionId,
             String constellationName,
             List<String> keywords,
             String comment,
             ConstellationData constellationData
     ) {
         this.userId = userId;
+        this.gameSessionId = gameSessionId;
         this.constellationName = constellationName;
         this.keywords = keywords;
         this.comment = comment;

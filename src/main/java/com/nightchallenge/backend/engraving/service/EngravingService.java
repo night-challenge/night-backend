@@ -37,8 +37,19 @@ public class EngravingService {
      * 용도: 게임 승리 결과로 각인 생성.
      * 승리한 게임 세션의 나이트 이동 궤적을 별자리로 재구성하고, 플레이 분석 결과와 함께
      * 새 각인(NightPathRecord)을 생성해 저장한다. 승리한 게임이 아니면 예외를 발생시킨다.
+     * 동일한 게임 세션으로 이미 각인이 생성된 적이 있으면, 새로 생성하지 않고 기존 각인을 그대로 반환한다.
+     * 화면 5.1에서 [<] 버튼으로 화면 4로 돌아갔다가 다시 각인 생성 단계로 진입해 API가 재호출되는 경우를 대비한 것이다.
      */
     public NightPathRecord createFromGameSession(Long gameSessionId) {
+        return nightPathRecordRepository.findByGameSessionId(gameSessionId)
+                .orElseGet(() -> createNewRecord(gameSessionId));
+    }
+
+    /**
+     * 용도: 새 각인 생성.
+     * 게임 승리 여부를 검증한 뒤, 궤적 재구성과 플레이 분석을 거쳐 새 각인을 저장한다.
+     */
+    private NightPathRecord createNewRecord(Long gameSessionId) {
         GameSession session = gameService.getGameSession(gameSessionId);
 
         if (session.getStatus() != GameStatus.WON) {
@@ -50,6 +61,7 @@ public class EngravingService {
 
         NightPathRecord record = new NightPathRecord(
                 TEMP_USER_ID,
+                gameSessionId,
                 analysis.constellationName(),
                 analysis.keywords(),
                 analysis.comment(),
