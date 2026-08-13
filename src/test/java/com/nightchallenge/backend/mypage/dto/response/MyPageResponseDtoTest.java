@@ -26,16 +26,16 @@ class MyPageResponseDtoTest {
     @DisplayName("마이페이지 메인 응답은 사용자 정보와 최근 카드 정보를 포함한다")
     void createsMyPageMainResponseWithRecentCard() throws Exception {
         MyPageMainResponse response = new MyPageMainResponse(
-                "민주",
-                "minju",
+                "사자후",
+                "sajahoo",
                 true,
                 new RecentCardResponse(2L, "설렘의 흔적")
         );
 
         JsonNode json = objectMapper.readTree(objectMapper.writeValueAsString(response));
 
-        assertThat(json.get("nickname").asString()).isEqualTo("민주");
-        assertThat(json.get("userIdDisplay").asString()).isEqualTo("minju");
+        assertThat(json.get("nickname").asString()).isEqualTo("사자후");
+        assertThat(json.get("userIdDisplay").asString()).isEqualTo("sajahoo");
         assertThat(json.get("hasEngravingRequest").asBoolean()).isTrue();
         assertThat(json.get("recentCard").get("id").asLong()).isEqualTo(2L);
         assertThat(json.get("recentCard").get("constellationName").asString()).isEqualTo("설렘의 흔적");
@@ -44,7 +44,7 @@ class MyPageResponseDtoTest {
     @Test
     @DisplayName("최근 카드가 없으면 recentCard는 null을 유지한다")
     void createsMyPageMainResponseWithoutRecentCard() throws Exception {
-        MyPageMainResponse response = new MyPageMainResponse("민주", "minju", false, null);
+        MyPageMainResponse response = new MyPageMainResponse("사자후", "sajahoo", false, null);
 
         JsonNode json = objectMapper.readTree(objectMapper.writeValueAsString(response));
 

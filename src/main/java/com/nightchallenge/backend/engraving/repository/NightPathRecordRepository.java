@@ -20,6 +20,12 @@ public interface NightPathRecordRepository extends JpaRepository<NightPathRecord
     List<NightPathRecord> findAllByUserIdOrderByCreatedAtDesc(Long userId);
 
     /**
+     * 용도: 사용자 최근 각인 조회.
+     * 마이페이지 메인에 표시할 가장 최근 각인 한 건을 생성일시 기준으로 조회한다.
+     */
+    Optional<NightPathRecord> findFirstByUserIdOrderByCreatedAtDesc(Long userId);
+
+    /**
      * 용도: 게임 세션으로 생성된 각인 조회.
      * 동일한 게임 세션으로 각인 생성 API가 재호출되는 경우, 이미 생성된 각인이 있는지 확인할 때 사용한다.
      */
