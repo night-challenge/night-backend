@@ -17,6 +17,7 @@ public enum ErrorCode {
     ENGRAVING_REQUEST_COLOR_REQUIRED(HttpStatus.BAD_REQUEST, "각인 색상을 선택해 주세요."),
     ENGRAVING_REQUEST_SELECTION_REQUIRED(HttpStatus.BAD_REQUEST, "제품에 새길 각인과 각인 색상을 선택해 주세요."),
     ENGRAVING_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 신청 건입니다."),
+    ENGRAVING_REQUEST_ALREADY_CANCELED(HttpStatus.BAD_REQUEST, "이미 취소된 신청 건입니다."),
     GAME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 게임입니다."),
     GAME_ALREADY_FINISHED(HttpStatus.BAD_REQUEST, "이미 종료된 게임입니다."),
     INVALID_MOVE(HttpStatus.BAD_REQUEST, "이동할 수 없는 위치입니다."),
