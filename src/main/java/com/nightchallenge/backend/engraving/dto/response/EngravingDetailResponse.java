@@ -1,5 +1,7 @@
 package com.nightchallenge.backend.engraving.dto.response;
 
+import com.nightchallenge.backend.engraving.domain.NightPathRecord;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,5 +24,20 @@ public record EngravingDetailResponse(
      */
     public EngravingDetailResponse {
         keywords = List.copyOf(keywords);
+    }
+
+    /**
+     * 용도: 각인 상세 DTO 변환.
+     * NightPathRecord Entity를 API 명세의 camelCase 응답으로 변환한다.
+     */
+    public static EngravingDetailResponse from(NightPathRecord record) {
+        return new EngravingDetailResponse(
+                record.getId(),
+                record.getConstellationName(),
+                record.getKeywords(),
+                record.getComment(),
+                ConstellationDataResponse.from(record.getConstellationData()),
+                record.getCreatedAt()
+        );
     }
 }

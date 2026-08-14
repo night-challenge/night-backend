@@ -8,4 +8,15 @@ public record ConstellationDataResponse(
         ConstellationShapeResponse before,
         ConstellationShapeResponse after
 ) {
+
+    /**
+     * 용도: 별자리 데이터 DTO 변환.
+     * 도메인의 ConstellationData를 API 명세의 응답으로 변환한다.
+     */
+    public static ConstellationDataResponse from(com.nightchallenge.backend.engraving.domain.ConstellationData data) {
+        return new ConstellationDataResponse(
+                ConstellationShapeResponse.from(data.before()),
+                ConstellationShapeResponse.from(data.after())
+        );
+    }
 }
