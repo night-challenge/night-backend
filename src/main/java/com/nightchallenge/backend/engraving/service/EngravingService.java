@@ -3,6 +3,10 @@ package com.nightchallenge.backend.engraving.service;
 import com.nightchallenge.backend.engraving.domain.ConstellationData;
 import com.nightchallenge.backend.engraving.domain.ConstellationShape;
 import com.nightchallenge.backend.engraving.domain.NightPathRecord;
+import com.nightchallenge.backend.engraving.dto.response.EngravingDetailResponse;
+import com.nightchallenge.backend.engraving.dto.response.EngravingListResponse;
+import com.nightchallenge.backend.engraving.dto.response.EngravingNameUpdateResponse;
+import com.nightchallenge.backend.engraving.dto.response.EngravingSummaryResponse;
 import com.nightchallenge.backend.engraving.repository.NightPathRecordRepository;
 import com.nightchallenge.backend.game.domain.GameSession;
 import com.nightchallenge.backend.game.domain.GameStatus;
@@ -32,6 +36,52 @@ public class EngravingService {
      * 로그인 기능 도입 전까지 사용하는 고정 사용자 식별자.
      */
     private static final Long TEMP_USER_ID = 1L;
+
+    /**
+     * 용도: 보유 각인 목록 조회.
+     * 고정 사용자의 각인을 생성일시 기준 최신순으로 조회하고 최종 after 별자리만 포함한 목록 응답으로 변환한다.
+     */
+    @Transactional(readOnly = true)
+    public EngravingListResponse getEngravings() {
+        return new EngravingListResponse(
+                nightPathRecordRepository.findAllByUserIdOrderByCreatedAtDesc(TEMP_USER_ID).stream()
+                        .map(EngravingSummaryResponse::from)
+                        .toList()
+        );
+    }
+
+    /**
+     * 용도: 보유 각인 상세 조회.
+     * 고정 사용자가 보유한 각인을 조회하고 원본 before와 최종 after를 모두 포함한 상세 응답으로 변환한다.
+     */
+    @Transactional(readOnly = true)
+    public EngravingDetailResponse getEngraving(Long engravingId) {
+        return EngravingDetailResponse.from(findOwnedEngraving(engravingId));
+    }
+
+    /**
+     * 용도: 보유 각인 이름 수정.
+     * 고정 사용자의 각인 이름이 기존 값과 다른지 확인한 뒤 새 이름을 반영하고 수정 결과를 반환한다.
+     */
+    public EngravingNameUpdateResponse updateEngravingName(Long engravingId, String constellationName) {
+        NightPathRecord record = findOwnedEngraving(engravingId);
+
+        if (record.getConstellationName().equals(constellationName)) {
+            throw new BusinessException(ErrorCode.ENGRAVING_NAME_UNCHANGED);
+        }
+
+        record.rename(constellationName);
+        return EngravingNameUpdateResponse.from(record);
+    }
+
+    /**
+     * 용도: 사용자 소유 각인 조회.
+     * 각인 식별자와 고정 사용자 식별자가 일치하는 데이터를 찾고 없으면 404 예외를 발생시킨다.
+     */
+    private NightPathRecord findOwnedEngraving(Long engravingId) {
+        return nightPathRecordRepository.findByIdAndUserId(engravingId, TEMP_USER_ID)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ENGRAVING_NOT_FOUND));
+    }
 
     /**
      * 용도: 게임 승리 결과로 각인 생성.
