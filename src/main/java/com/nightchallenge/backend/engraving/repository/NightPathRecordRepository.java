@@ -26,6 +26,13 @@ public interface NightPathRecordRepository extends JpaRepository<NightPathRecord
     Optional<NightPathRecord> findFirstByUserIdOrderByCreatedAtDesc(Long userId);
 
     /**
+     * 용도: 사용자 소유 각인 단건 조회.
+     * 각인 식별자와 사용자 식별자를 함께 확인해 현재 사용자가 보유한 각인만 조회한다.
+     */
+    Optional<NightPathRecord> findByIdAndUserId(Long id, Long userId);
+
+
+    /**
      * 용도: 게임 세션으로 생성된 각인 조회.
      * 동일한 게임 세션으로 각인 생성 API가 재호출되는 경우, 이미 생성된 각인이 있는지 확인할 때 사용한다.
      */

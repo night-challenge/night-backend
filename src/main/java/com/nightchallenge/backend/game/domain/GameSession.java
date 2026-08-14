@@ -29,7 +29,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GameSession {
 
-    private static final int MAX_TURN = 15;
+    public static final int MAX_TURN = 15;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,6 +51,9 @@ public class GameSession {
     @Column(nullable = false, length = 100)
     private String fen;
 
+    /**
+     * 사용자가 이동한 횟수(=턴 수)만 센다. AI의 응수는 턴 수에 포함하지 않는다.
+     */
     @Column(name = "current_turn", nullable = false)
     private int currentTurn;
 
@@ -108,13 +111,24 @@ public class GameSession {
     }
 
     /**
-     * 용도: 이동 처리 결과 반영.
-     * 한 턴의 이동 처리 후 획득 점수, 보드 상태, 진행 상태를 한 번에 갱신한다.
+     * 용도: 사용자 이동 처리 결과 반영.
+     * 사용자가 한 수 둘 때마다 호출되며, 획득 점수·보드 상태·진행 상태를 갱신하고 턴 수를 1 증가시킨다.
+     * "1턴"은 사용자 이동 1회와 이어지는 AI 응수 1회를 합친 단위이므로, 턴 증가는 사용자 이동에서만 일어난다.
      */
-    public void applyMoveResult(int gainedScore, String newFen, GameStatus newStatus) {
+    public void applyUserMoveResult(int gainedScore, String newFen, GameStatus newStatus) {
         this.score += gainedScore;
         this.fen = newFen;
         this.currentTurn += 1;
+        this.status = newStatus;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 용도: AI 응수 처리 결과 반영.
+     * AI가 응수할 때마다 호출되며, 보드 상태와 진행 상태만 갱신한다. AI의 응수는 턴 수에 포함하지 않는다.
+     */
+    public void applyAiMoveResult(String newFen, GameStatus newStatus) {
+        this.fen = newFen;
         this.status = newStatus;
         this.updatedAt = LocalDateTime.now();
     }
@@ -129,7 +143,7 @@ public class GameSession {
 
     /**
      * 용도: 최대 턴 도달 여부 확인.
-     * 15턴 종료 조건에 도달했는지 확인한다.
+     * 사용자 이동 기준으로 15턴 종료 조건에 도달했는지 확인한다.
      */
     public boolean hasReachedMaxTurn() {
         return currentTurn >= MAX_TURN;

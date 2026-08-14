@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * 용도: 게임 한 턴의 이동 처리.
  * 사용자 이동을 검증하고 실행한 뒤 점수와 궤적을 갱신하고, 게임이 계속되면 AI의 응수까지 처리한다.
+ * "1턴"은 사용자 이동 1회와 이어지는 AI 응수 1회를 합친 단위로 취급하며, 턴 수 증가는 사용자 이동에서만 일어난다.
  */
 @Service
 @RequiredArgsConstructor
@@ -40,14 +41,24 @@ public class GameMoveService {
         Move userMove = createMove(fromSquare, toSquare);
         MoveOutcome userOutcome = applyMove(board, session, userMove, true);
 
-        session.applyMoveResult(userOutcome.gainedScore(), board.getFen(), determineStatus(session, board));
+        // 승패 판정은 이번 이동으로 갱신될 점수·턴(projected 값)을 기준으로 미리 계산한다.
+        // session.applyUserMoveResult 호출 전에는 아직 이번 이동의 점수/턴이 반영되지 않아,
+        // determineStatus를 session의 현재 상태만으로 계산하면 한 수 지연된 판정이 나오기 때문이다.
+        int projectedScore = session.getScore() + userOutcome.gainedScore();
+        int projectedTurn = session.getCurrentTurn() + 1;
+        GameStatus userMoveStatus = determineStatus(session.getTargetScore(), projectedScore, projectedTurn, board);
+
+        session.applyUserMoveResult(userOutcome.gainedScore(), board.getFen(), userMoveStatus);
 
         MoveOutcome aiOutcome = null;
         if (session.getStatus() == GameStatus.IN_PROGRESS) {
             Move aiMove = aiOpponentService.selectMove(board);
             if (aiMove != null) {
                 aiOutcome = applyMove(board, session, aiMove, false);
-                session.applyMoveResult(0, board.getFen(), determineStatus(session, board));
+
+                // AI 응수는 점수·턴을 바꾸지 않으므로, 이미 갱신된 session의 현재 값을 그대로 사용한다.
+                GameStatus aiMoveStatus = determineStatus(session.getTargetScore(), session.getScore(), session.getCurrentTurn(), board);
+                session.applyAiMoveResult(board.getFen(), aiMoveStatus);
             }
         }
 
@@ -112,12 +123,18 @@ public class GameMoveService {
      * 용도: 이동 후 게임 상태 판정.
      * 목표 점수 달성이나 15턴 종료를 체크메이트보다 우선 판정하고, 그다음 체크메이트 여부를 확인한다.
      */
-    private GameStatus determineStatus(GameSession session, Board board) {
-        if (session.hasReachedTargetScore()) {
-            return GameStatus.WON;
-        }
-        if (session.hasReachedMaxTurn()) {
+    /**
+     * 용도: 이동 후 게임 상태 판정.
+     * 15턴 종료 조건과 목표 점수 달성 조건이 동시에 충족되면 15턴 종료 조건을 우선 판정하고,
+     * 그다음 목표 점수 달성, 마지막으로 체크메이트 여부를 확인한다.
+     * 아직 엔티티에 반영되지 않은 이동 결과까지 반영한 예상 점수·턴 값을 받아 판정하므로 지연 없이 정확하다.
+     */
+    private GameStatus determineStatus(int targetScore, int projectedScore, int projectedTurn, Board board) {
+        if (projectedTurn >= GameSession.MAX_TURN) {
             return GameStatus.LOST;
+        }
+        if (projectedScore >= targetScore) {
+            return GameStatus.WON;
         }
         if (board.isMated()) {
             return GameStatus.LOST;

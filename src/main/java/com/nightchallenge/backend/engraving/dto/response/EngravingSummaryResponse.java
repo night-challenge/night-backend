@@ -1,5 +1,7 @@
 package com.nightchallenge.backend.engraving.dto.response;
 
+import com.nightchallenge.backend.engraving.domain.NightPathRecord;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,5 +24,20 @@ public record EngravingSummaryResponse(
      */
     public EngravingSummaryResponse {
         keywords = List.copyOf(keywords);
+    }
+
+    /**
+     * 용도: 각인 목록 DTO 변환.
+     * NightPathRecord에서 목록 화면에 필요한 정보와 최종 after 별자리만 추출한다.
+     */
+    public static EngravingSummaryResponse from(NightPathRecord record) {
+        return new EngravingSummaryResponse(
+                record.getId(),
+                record.getConstellationName(),
+                record.getKeywords(),
+                record.getComment(),
+                ConstellationShapeResponse.from(record.getConstellationData().after()),
+                record.getCreatedAt()
+        );
     }
 }

@@ -4,6 +4,7 @@ import com.github.bhlangonijr.chesslib.Board;
 import com.github.bhlangonijr.chesslib.Piece;
 import com.github.bhlangonijr.chesslib.PieceType;
 import com.github.bhlangonijr.chesslib.Side;
+import com.github.bhlangonijr.chesslib.Square;
 import com.github.bhlangonijr.chesslib.move.Move;
 import org.springframework.stereotype.Component;
 
@@ -66,14 +67,20 @@ public class AiOpponentService {
 
     /**
      * 용도: 사용자 나이트 위협 여부 확인.
-     * AI 이동 후 보드에서, 사용자(백)의 나이트가 AI(흑)의 다음 수에 잡힐 수 있는 상태인지 확인한다.
+     * AI(흑)의 이동을 적용한 보드에서, 사용자(백)가 보유한 나이트가 있는 칸이
+     * 흑 진영에게 실제로 공격받고 있는지를 직접 확인한다. 합법 이동 목록이 아니라
+     * squareAttackedBy로 공격 여부 자체를 조회하므로 차례가 누구인지와 무관하게 정확하다.
      */
     private boolean threatensUserKnight(Board board) {
-        return board.legalMoves().stream()
-                .anyMatch(nextMove -> {
-                    Piece target = board.getPiece(nextMove.getTo());
-                    return target.getPieceType() == PieceType.KNIGHT && target.getPieceSide() == Side.WHITE;
-                });
+        List<Square> whiteKnightSquares = board.getPieceLocation(Piece.WHITE_KNIGHT);
+
+        for (Square knightSquare : whiteKnightSquares) {
+            if (board.squareAttackedBy(knightSquare, Side.BLACK) != 0L) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
