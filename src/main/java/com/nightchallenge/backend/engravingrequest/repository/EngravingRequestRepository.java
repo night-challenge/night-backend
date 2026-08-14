@@ -33,6 +33,20 @@ public interface EngravingRequestRepository extends JpaRepository<EngravingReque
     }
 
     /**
+     * 용도: 사용자 신청 여부 확인.
+     * 고정 사용자가 특정 상태의 제품 각인 신청을 하나 이상 보유하는지 확인한다.
+     */
+    boolean existsByUserIdAndStatusValue(Long userId, String statusValue);
+
+    /**
+     * 용도: 사용자 신청 상태 확인.
+     * 신청 상태 enum을 DB 저장 문자열로 변환해 해당 상태의 신청 존재 여부를 확인한다.
+     */
+    default boolean existsByUserIdAndStatus(Long userId, EngravingRequestStatus status) {
+        return existsByUserIdAndStatusValue(userId, status.getValue());
+    }
+
+    /**
      * 용도: 제품 코드 중복 확인.
      * 새 제품 코드를 발급하기 전에 동일한 코드가 저장되어 있는지 확인한다.
      */
