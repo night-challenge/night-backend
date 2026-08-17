@@ -9,6 +9,9 @@ import com.nightchallenge.backend.engraving.dto.response.EngravingListResponse;
 import com.nightchallenge.backend.engraving.dto.response.EngravingNameUpdateResponse;
 import com.nightchallenge.backend.engraving.repository.NightPathRecordRepository;
 import com.nightchallenge.backend.game.service.GameService;
+import com.nightchallenge.backend.game.domain.GameMode;
+import com.nightchallenge.backend.game.domain.GameSession;
+import com.nightchallenge.backend.game.domain.GameStatus;
 import com.nightchallenge.backend.global.exception.BusinessException;
 import com.nightchallenge.backend.global.exception.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +29,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
+import static org.mockito.ArgumentMatchers.any;
 
 /**
  * 용도: 보유 각인 Service 단위 테스트.
@@ -48,6 +53,92 @@ class EngravingServiceTest {
 
     @InjectMocks
     private EngravingService engravingService;
+
+    @Test
+    @DisplayName("동일 게임의 기존 각인이 있으면 추가 저장 없이 기존 기록을 반환한다")
+    void createFromGameSessionReturnsExistingRecord() {
+        NightPathRecord existing = createRecord(1L, "기존 각인");
+        given(nightPathRecordRepository.findByGameSessionId(101L))
+                .willReturn(Optional.of(existing));
+
+        EngravingService.CreationResult result = engravingService.createFromGameSession(101L);
+
+        assertThat(result.created()).isFalse();
+        assertThat(result.record()).isSameAs(existing);
+        verify(nightPathRecordRepository, never()).save(any(NightPathRecord.class));
+        verify(gameService, never()).getGameSession(any(Long.class));
+    }
+
+    @Test
+    @DisplayName("각인이 없는 승리 게임은 한 번 저장하고 신규 생성 결과를 반환한다")
+    void createFromGameSessionSavesNewRecordOnce() {
+        GameSession session = new GameSession(1L, GameMode.EASY, new com.github.bhlangonijr.chesslib.Board().getFen());
+        ReflectionTestUtils.setField(session, "status", GameStatus.WON);
+        ConstellationData data = createRecord(9L, "형태").getConstellationData();
+
+        given(nightPathRecordRepository.findByGameSessionId(10L)).willReturn(Optional.empty());
+        given(gameService.getGameSession(10L)).willReturn(session);
+        given(constellationGenerationService.generate(session.getKnightMoveLog())).willReturn(data);
+        given(playAnalyzer.analyze(session))
+                .willReturn(new PlayAnalysisResult("새 각인", List.of("도전"), "분석"));
+        given(nightPathRecordRepository.save(any(NightPathRecord.class)))
+                .willAnswer(invocation -> invocation.getArgument(0));
+
+        EngravingService.CreationResult result = engravingService.createFromGameSession(10L);
+
+        assertThat(result.created()).isTrue();
+        assertThat(result.record().getGameSessionId()).isEqualTo(10L);
+        assertThat(result.record().getConstellationName()).isEqualTo("새 각인");
+        verify(nightPathRecordRepository).save(any(NightPathRecord.class));
+    }
+
+    @Test
+    @DisplayName("승리하지 않은 게임의 각인 생성은 400 예외를 유지한다")
+    void createFromGameSessionRejectsUnfinishedGame() {
+        GameSession session = new GameSession(1L, GameMode.EASY, new com.github.bhlangonijr.chesslib.Board().getFen());
+        given(nightPathRecordRepository.findByGameSessionId(10L)).willReturn(Optional.empty());
+        given(gameService.getGameSession(10L)).willReturn(session);
+
+        assertThatThrownBy(() -> engravingService.createFromGameSession(10L))
+                .isInstanceOfSatisfying(BusinessException.class, exception ->
+                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.INVALID_REQUEST));
+        verify(nightPathRecordRepository, never()).save(any(NightPathRecord.class));
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게임의 각인 생성은 404 예외를 유지한다")
+    void createFromGameSessionKeepsGameNotFound() {
+        given(nightPathRecordRepository.findByGameSessionId(999L)).willReturn(Optional.empty());
+        given(gameService.getGameSession(999L))
+                .willThrow(new BusinessException(ErrorCode.GAME_NOT_FOUND));
+
+        assertThatThrownBy(() -> engravingService.createFromGameSession(999L))
+                .isInstanceOfSatisfying(BusinessException.class, exception ->
+                        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.GAME_NOT_FOUND));
+    }
+
+    @Test
+    @DisplayName("재생성하면 before와 분석 정보는 유지하고 after만 변경한다")
+    void regenerateChangesOnlyAfter() {
+        NightPathRecord record = createRecord(1L, "기존 각인");
+        ConstellationShape originalBefore = record.getConstellationData().before();
+        ConstellationShape newAfter = new ConstellationShape(
+                List.of(new ConstellationPoint(20, 150, 150)),
+                List.of()
+        );
+        List<String> originalKeywords = record.getKeywords();
+        String originalComment = record.getComment();
+        given(nightPathRecordRepository.findById(1L)).willReturn(Optional.of(record));
+        given(constellationGenerationService.regenerateAfter(originalBefore)).willReturn(newAfter);
+
+        NightPathRecord result = engravingService.regenerate(1L);
+
+        assertThat(result.getConstellationData().before()).isSameAs(originalBefore);
+        assertThat(result.getConstellationData().after()).isSameAs(newAfter);
+        assertThat(result.getConstellationName()).isEqualTo("기존 각인");
+        assertThat(result.getKeywords()).isSameAs(originalKeywords);
+        assertThat(result.getComment()).isEqualTo(originalComment);
+    }
 
     @Test
     @DisplayName("고정 사용자의 각인 목록을 최신순 Repository 결과대로 변환한다")

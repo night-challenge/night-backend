@@ -90,9 +90,17 @@ public class EngravingService {
      * 동일한 게임 세션으로 이미 각인이 생성된 적이 있으면, 새로 생성하지 않고 기존 각인을 그대로 반환한다.
      * 화면 5.1에서 [<] 버튼으로 화면 4로 돌아갔다가 다시 각인 생성 단계로 진입해 API가 재호출되는 경우를 대비한 것이다.
      */
-    public NightPathRecord createFromGameSession(Long gameSessionId) {
+    public CreationResult createFromGameSession(Long gameSessionId) {
         return nightPathRecordRepository.findByGameSessionId(gameSessionId)
-                .orElseGet(() -> createNewRecord(gameSessionId));
+                .map(record -> new CreationResult(record, false))
+                .orElseGet(() -> new CreationResult(createNewRecord(gameSessionId), true));
+    }
+
+    /**
+     * 용도: 각인 생성 결과 전달.
+     * Controller가 신규 생성과 기존 기록 반환을 구분해 HTTP 상태를 결정할 수 있도록 한다.
+     */
+    public record CreationResult(NightPathRecord record, boolean created) {
     }
 
     /**

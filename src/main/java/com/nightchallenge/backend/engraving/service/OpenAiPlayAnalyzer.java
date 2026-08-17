@@ -9,6 +9,8 @@ import com.nightchallenge.backend.global.exception.BusinessException;
 import com.nightchallenge.backend.global.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import tools.jackson.databind.json.JsonMapper;
@@ -23,6 +25,7 @@ import java.util.List;
 @Component
 public class OpenAiPlayAnalyzer implements PlayAnalyzer {
 
+    private static final Logger log = LoggerFactory.getLogger(OpenAiPlayAnalyzer.class);
     private static final String CHAT_COMPLETIONS_URL = "https://api.openai.com/v1/chat/completions";
     private static final JsonMapper JSON_MAPPER = JsonMapper.shared();
 
@@ -70,6 +73,7 @@ public class OpenAiPlayAnalyzer implements PlayAnalyzer {
                     .retrieve()
                     .body(OpenAiChatResponse.class);
         } catch (Exception exception) {
+            log.error("OpenAI 분석 요청 실패", exception);
             throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "AI 분석 요청에 실패했습니다.");
         }
 
@@ -113,6 +117,7 @@ public class OpenAiPlayAnalyzer implements PlayAnalyzer {
             PlayAnalysisPayload payload = JSON_MAPPER.readValue(content, PlayAnalysisPayload.class);
             return new PlayAnalysisResult(payload.constellationName(), payload.keywords(), payload.comment());
         } catch (Exception exception) {
+            log.error("OpenAI 분석 응답 처리 실패", exception);
             throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "AI 분석 결과 처리에 실패했습니다.");
         }
     }
