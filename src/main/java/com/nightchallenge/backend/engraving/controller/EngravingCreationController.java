@@ -1,10 +1,11 @@
 package com.nightchallenge.backend.engraving.controller;
 
-import com.nightchallenge.backend.engraving.domain.NightPathRecord;
 import com.nightchallenge.backend.engraving.dto.response.EngravingDetailResponse;
 import com.nightchallenge.backend.engraving.service.EngravingService;
 import com.nightchallenge.backend.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,10 +28,16 @@ public class EngravingCreationController {
      * 승리한 게임 세션의 나이트 이동 궤적을 별자리로 재구성하고 플레이 분석 결과와 함께 각인을 생성한다.
      */
     @PostMapping
-    public ApiResponse<EngravingDetailResponse> createEngraving(
+    public ResponseEntity<ApiResponse<EngravingDetailResponse>> createEngraving(
             @PathVariable Long gameSessionId
     ) {
-        NightPathRecord record = engravingService.createFromGameSession(gameSessionId);
-        return ApiResponse.success("각인이 생성되었습니다.", EngravingDetailResponse.from(record));
+        EngravingService.CreationResult result = engravingService.createFromGameSession(gameSessionId);
+        HttpStatus status = result.created() ? HttpStatus.CREATED : HttpStatus.OK;
+        String message = result.created() ? "각인이 생성되었습니다." : "기존 각인을 조회했습니다.";
+
+        return ResponseEntity.status(status).body(ApiResponse.success(
+                message,
+                EngravingDetailResponse.from(result.record())
+        ));
     }
 }

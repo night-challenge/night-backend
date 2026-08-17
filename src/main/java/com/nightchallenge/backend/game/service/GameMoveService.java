@@ -121,20 +121,16 @@ public class GameMoveService {
 
     /**
      * 용도: 이동 후 게임 상태 판정.
-     * 목표 점수 달성이나 15턴 종료를 체크메이트보다 우선 판정하고, 그다음 체크메이트 여부를 확인한다.
-     */
-    /**
-     * 용도: 이동 후 게임 상태 판정.
-     * 15턴 종료 조건과 목표 점수 달성 조건이 동시에 충족되면 15턴 종료 조건을 우선 판정하고,
-     * 그다음 목표 점수 달성, 마지막으로 체크메이트 여부를 확인한다.
+     * 목표 점수 달성 여부를 먼저 확인하고, 목표에 미달한 채 15번째 턴에 도달하면 패배로 판정한다.
+     * 마지막으로 체크메이트 여부를 확인한다.
      * 아직 엔티티에 반영되지 않은 이동 결과까지 반영한 예상 점수·턴 값을 받아 판정하므로 지연 없이 정확하다.
      */
     private GameStatus determineStatus(int targetScore, int projectedScore, int projectedTurn, Board board) {
-        if (projectedTurn >= GameSession.MAX_TURN) {
-            return GameStatus.LOST;
-        }
         if (projectedScore >= targetScore) {
             return GameStatus.WON;
+        }
+        if (projectedTurn >= GameSession.MAX_TURN) {
+            return GameStatus.LOST;
         }
         if (board.isMated()) {
             return GameStatus.LOST;

@@ -48,7 +48,8 @@ public class GameService {
      * 화면 2.1(재진입)에서 이어할 게임이 있는지 확인할 때 사용하며, 없으면 404 비즈니스 예외를 발생시킨다.
      */
     public GameSession getActiveGame() {
-        return gameSessionRepository.findByUserIdAndStatus(TEMP_USER_ID, GameStatus.IN_PROGRESS)
+        return gameSessionRepository
+                .findFirstByUserIdAndStatusOrderByUpdatedAtDescIdDesc(TEMP_USER_ID, GameStatus.IN_PROGRESS)
                 .orElseThrow(() -> new BusinessException(ErrorCode.GAME_NOT_FOUND, "진행 중인 게임이 없습니다."));
     }
 
