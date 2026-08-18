@@ -74,6 +74,7 @@ class EngravingRequestDtoTest {
         EngravingRequestSummaryResponse record = new EngravingRequestSummaryResponse(
                 5L,
                 "NWdfw25",
+                EngravingColor.GOLD,
                 product,
                 engraving
         );
@@ -102,6 +103,7 @@ class EngravingRequestDtoTest {
         EngravingRequestSummaryResponse record = new EngravingRequestSummaryResponse(
                 5L,
                 "NWdfw25",
+                EngravingColor.GOLD,
                 new EngravingRequestProductResponse("L 비세토스 수트케이스", "갈색"),
                 createEngravingSummary()
         );

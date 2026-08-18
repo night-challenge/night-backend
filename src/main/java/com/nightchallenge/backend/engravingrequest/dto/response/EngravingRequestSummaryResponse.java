@@ -1,6 +1,7 @@
 package com.nightchallenge.backend.engravingrequest.dto.response;
 
 import com.nightchallenge.backend.engraving.dto.response.EngravingSummaryResponse;
+import com.nightchallenge.backend.engravingrequest.domain.EngravingColor;
 
 /**
  * 용도: 각인 신청 목록 항목 응답.
@@ -9,6 +10,7 @@ import com.nightchallenge.backend.engraving.dto.response.EngravingSummaryRespons
 public record EngravingRequestSummaryResponse(
         Long id,
         String productCode,
+        EngravingColor engravingColor,
         EngravingRequestProductResponse product,
         EngravingSummaryResponse engraving
 ) {

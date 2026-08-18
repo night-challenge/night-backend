@@ -148,6 +148,7 @@ public class EngravingRequestService {
         return new EngravingRequestSummaryResponse(
                 request.getId(),
                 request.getProductCode(),
+                request.getEngravingColor(),
                 productResponse,
                 engravingResponse
         );
