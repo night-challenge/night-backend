@@ -29,7 +29,7 @@ public class OpenAiPlayAnalyzer implements PlayAnalyzer {
     private static final String CHAT_COMPLETIONS_URL = "https://api.openai.com/v1/chat/completions";
     private static final JsonMapper JSON_MAPPER = JsonMapper.shared();
 
-    private static final String PROMPT_TEMPLATE = """
+    static final String PROMPT_TEMPLATE = """
             당신은 체스 미니게임의 플레이 스타일을 분석하는 어시스턴트입니다.
             아래 게임 정보를 참고해 이 플레이어의 별자리 이름, 키워드 3개, 한 문장 코멘트를 만들어주세요.
 
@@ -38,8 +38,13 @@ public class OpenAiPlayAnalyzer implements PlayAnalyzer {
             - 총 턴 수: %d턴
             - 나이트 이동 횟수: %d회
 
+            별자리 이름은 다음 규칙을 모두 지켜 작성하세요.
+            - 양자리, 사자자리 등 실제로 존재하는 별자리 이름은 사용하지 마세요.
+            - 플레이 성향을 표현하는 창작 이름을 사용하세요.
+            - 반드시 짧고 자연스러운 'OO의 궤적' 형식으로 작성하세요.
+
             반드시 아래 JSON 형식으로만 응답하세요. 다른 설명은 포함하지 마세요.
-            {"constellationName": "별자리 이름", "keywords": ["키워드1", "키워드2", "키워드3"], "comment": "당신은 ~했습니다 형태의 한 문장"}
+            {"constellationName": "도전의 궤적", "keywords": ["키워드1", "키워드2", "키워드3"], "comment": "당신은 ~했습니다 형태의 한 문장"}
             """;
 
     private final RestClient restClient;
