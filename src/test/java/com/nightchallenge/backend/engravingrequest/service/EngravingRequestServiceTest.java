@@ -202,6 +202,7 @@ class EngravingRequestServiceTest {
                 .getEngravingRequests(EngravingRequestStatus.COMPLETED);
 
         assertThat(response.records()).hasSize(1);
+        assertThat(response.records().get(0).engravingColor()).isEqualTo(EngravingColor.GOLD);
         assertThat(response.records().get(0).product().optionName())
                 .isEqualTo("L Aren 비세토스 스쿨 토트");
         assertThat(response.records().get(0).engraving().constellationData().points())

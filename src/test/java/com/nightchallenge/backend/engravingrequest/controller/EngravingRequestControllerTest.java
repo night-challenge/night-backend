@@ -3,6 +3,7 @@ package com.nightchallenge.backend.engravingrequest.controller;
 import com.nightchallenge.backend.engraving.dto.response.ConstellationPointResponse;
 import com.nightchallenge.backend.engraving.dto.response.ConstellationShapeResponse;
 import com.nightchallenge.backend.engraving.dto.response.EngravingSummaryResponse;
+import com.nightchallenge.backend.engravingrequest.domain.EngravingColor;
 import com.nightchallenge.backend.engravingrequest.domain.EngravingRequestStatus;
 import com.nightchallenge.backend.engravingrequest.dto.response.EngravingRequestCreateResponse;
 import com.nightchallenge.backend.engravingrequest.dto.response.EngravingRequestListResponse;
@@ -147,6 +148,7 @@ class EngravingRequestControllerTest {
                 .andExpect(jsonPath("$.status").value("success"))
                 .andExpect(jsonPath("$.message").isEmpty())
                 .andExpect(jsonPath("$.data.records[0].id").value(5))
+                .andExpect(jsonPath("$.data.records[0].engravingColor").value("gold"))
                 .andExpect(jsonPath("$.data.records[0].product.optionName")
                         .value("L 비세토스 수트케이스"))
                 .andExpect(jsonPath("$.data.records[0].engraving.constellationData.points[0].id")
@@ -241,6 +243,7 @@ class EngravingRequestControllerTest {
         EngravingRequestSummaryResponse record = new EngravingRequestSummaryResponse(
                 5L,
                 "NWdfw25",
+                EngravingColor.GOLD,
                 new EngravingRequestProductResponse("L 비세토스 수트케이스", "갈색"),
                 engraving
         );
