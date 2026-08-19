@@ -41,10 +41,10 @@ Knight의 움직임을 Night의 별자리로 연결하는 AI 기반 개인화 �
 ## 📑 목차
 
 - [팀원](#-팀원)
+- [기술 스택](#-기술-스택)
 - [AI 활용 방식](#-ai-활용-방식)
 - [주요 기능](#-주요-기능)
 - [서비스 흐름](#-서비스-흐름)
-- [기술 스택](#-기술-스택)
 - [ERD](#-erd)
 - [주요 API](#-주요-api)
 - [API 공통 응답 형식](#-api-공통-응답-형식)
@@ -195,6 +195,46 @@ Knight의 움직임을 Night의 별자리로 연결하는 AI 기반 개인화 �
 
 ---
 
+## 🧰 기술 스택
+
+<table>
+  <tr>
+    <th align="center">Frontend</th>
+    <th align="center">Backend</th>
+    <th align="center">Design</th>
+    <th align="center">Collaboration</th>
+  </tr>
+  <tr>
+    <td valign="top">
+      <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black" /><br />
+      <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" /><br />
+      <img src="https://img.shields.io/badge/React%20Router-CA4245?style=for-the-badge&logo=reactrouter&logoColor=white" /><br />
+      <img src="https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white" /><br />
+      <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" /><br />
+      <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" /><br />
+    </td>
+    <td valign="top">
+      <img src="https://img.shields.io/badge/Java-007396?style=for-the-badge&logo=openjdk&logoColor=white" /><br />
+      <img src="https://img.shields.io/badge/Spring%20Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" /><br />
+      <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" /><br />
+      <img src="https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white" /><br />
+      <img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white" /><br />
+      <img src="https://img.shields.io/badge/Railway-0B0D0E?style=for-the-badge&logo=railway&logoColor=white" /><br />
+    </td>
+    <td valign="top">
+      <img src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white" /><br />
+    </td>
+    <td valign="top">
+      <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white" /><br />
+      <img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white" /><br />
+      <img src="https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white" /><br />
+      <img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white" /><br />
+    </td>
+  </tr>
+</table>
+
+---
+
 ## 🤖 AI 활용 방식
 
 - 나이트 이동 궤적을 생성 로직으로 재구성해 별자리 디자인 생성
@@ -247,46 +287,6 @@ Knight의 움직임을 Night의 별자리로 연결하는 AI 기반 개인화 �
 7. 제품 및 각인 색상 선택
 8. 제품 각인 신청
 9. 마이페이지에서 신청 내역과 보유 카드 조회
-
----
-
-## 🧰 기술 스택
-
-<table>
-  <tr>
-    <th align="center">Frontend</th>
-    <th align="center">Backend</th>
-    <th align="center">Design</th>
-    <th align="center">Collaboration</th>
-  </tr>
-  <tr>
-    <td valign="top">
-      <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black" /><br />
-      <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" /><br />
-      <img src="https://img.shields.io/badge/React%20Router-CA4245?style=for-the-badge&logo=reactrouter&logoColor=white" /><br />
-      <img src="https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white" /><br />
-      <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" /><br />
-      <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" /><br />
-    </td>
-    <td valign="top">
-      <img src="https://img.shields.io/badge/Java-007396?style=for-the-badge&logo=openjdk&logoColor=white" /><br />
-      <img src="https://img.shields.io/badge/Spring%20Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" /><br />
-      <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" /><br />
-      <img src="https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white" /><br />
-      <img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white" /><br />
-      <img src="https://img.shields.io/badge/Railway-0B0D0E?style=for-the-badge&logo=railway&logoColor=white" /><br />
-    </td>
-    <td valign="top">
-      <img src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white" /><br />
-    </td>
-    <td valign="top">
-      <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white" /><br />
-      <img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white" /><br />
-      <img src="https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white" /><br />
-      <img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white" /><br />
-    </td>
-  </tr>
-</table>
 
 ---
 
