@@ -5,6 +5,7 @@ import com.nightchallenge.backend.engraving.service.dto.OpenAiChatRequest;
 import com.nightchallenge.backend.engraving.service.dto.OpenAiChatResponse;
 import com.nightchallenge.backend.engraving.service.dto.PlayAnalysisPayload;
 import com.nightchallenge.backend.game.domain.GameSession;
+import com.nightchallenge.backend.game.domain.KnightMoveLog;
 import com.nightchallenge.backend.global.exception.BusinessException;
 import com.nightchallenge.backend.global.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,8 @@ import org.springframework.web.client.RestClient;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * 용도: PlayAnalyzer의 OpenAI 연동 구현체.
@@ -31,20 +34,27 @@ public class OpenAiPlayAnalyzer implements PlayAnalyzer {
 
     static final String PROMPT_TEMPLATE = """
             당신은 체스 미니게임의 플레이 스타일을 분석하는 어시스턴트입니다.
-            아래 게임 정보를 참고해 이 플레이어의 별자리 이름, 키워드 3개, 한 문장 코멘트를 만들어주세요.
+            아래 게임 정보를 참고해 이 플레이어의 키워드 3개, 각인 이름, 한 문장 코멘트를 만들어주세요.
 
             - 난이도: %s
             - 최종 점수: %d점 (목표 %d점)
             - 총 턴 수: %d턴
             - 나이트 이동 횟수: %d회
+            - 나이트 이동 경로: %s
 
-            별자리 이름은 다음 규칙을 모두 지켜 작성하세요.
+            다음 순서로 결과를 생성하세요.
+            1. 게임 정보와 나이트 이동 경로를 분석해 플레이 성향 키워드 3개를 먼저 선정하세요.
+            2. 선정한 키워드 3개를 바탕으로 각인 이름과 코멘트를 생성하세요.
+
+            각인 이름은 다음 규칙을 모두 지켜 작성하세요.
             - 양자리, 사자자리 등 실제로 존재하는 별자리 이름은 사용하지 마세요.
             - 플레이 성향을 표현하는 창작 이름을 사용하세요.
-            - 반드시 짧고 자연스러운 'OO의 궤적' 형식으로 작성하세요.
+            - 앞부분의 글자 수는 제한하지 않되 짧고 자연스럽게 작성하세요.
+            - 최종 이름은 반드시 '~의 궤적' 형식으로 작성하고 '의 궤적'으로 끝나게 하세요.
+            - 입력과 무관한 동일한 이름을 반복하지 마세요.
 
-            반드시 아래 JSON 형식으로만 응답하세요. 다른 설명은 포함하지 마세요.
-            {"constellationName": "도전의 궤적", "keywords": ["키워드1", "키워드2", "키워드3"], "comment": "당신은 ~했습니다 형태의 한 문장"}
+            반드시 keywords, constellationName, comment를 포함한 JSON 객체로만 응답하세요.
+            각 값은 이번 플레이를 분석해 새로 생성하고 다른 설명은 포함하지 마세요.
             """;
 
     private final RestClient restClient;
@@ -90,14 +100,7 @@ public class OpenAiPlayAnalyzer implements PlayAnalyzer {
      * 게임 정보를 담은 프롬프트와 JSON 강제 응답 형식을 포함한 요청을 만든다.
      */
     private OpenAiChatRequest buildRequest(GameSession session) {
-        int knightMoveCount = session.getKnightMoveLog().size();
-        String prompt = PROMPT_TEMPLATE.formatted(
-                session.getMode(),
-                session.getScore(),
-                session.getTargetScore(),
-                session.getCurrentTurn(),
-                knightMoveCount
-        );
+        String prompt = buildPrompt(session);
 
         return new OpenAiChatRequest(
                 model,
@@ -105,6 +108,44 @@ public class OpenAiPlayAnalyzer implements PlayAnalyzer {
                 0.8,
                 OpenAiChatRequest.ResponseFormat.jsonObject()
         );
+    }
+
+    /**
+     * 용도: OpenAI 분석 프롬프트 생성.
+     * 게임 요약 정보와 사용자 나이트의 이동 경로를 이동 순서대로 구성한다.
+     */
+    String buildPrompt(GameSession session) {
+        int knightMoveCount = session.getKnightMoveLog().size();
+        String movePath = formatKnightMovePath(session);
+
+        return PROMPT_TEMPLATE.formatted(
+                session.getMode(),
+                session.getScore(),
+                session.getTargetScore(),
+                session.getCurrentTurn(),
+                knightMoveCount,
+                movePath
+        );
+    }
+
+    private String formatKnightMovePath(GameSession session) {
+        List<KnightMoveLog> moveLogs = session.getKnightMoveLog();
+        if (moveLogs.isEmpty()) {
+            return "이동 기록 없음";
+        }
+
+        return IntStream.range(0, moveLogs.size())
+                .mapToObj(index -> {
+                    var move = moveLogs.get(index);
+                    return "%d번째 이동: (%d,%d) → (%d,%d)".formatted(
+                            index + 1,
+                            move.fromX(),
+                            move.fromY(),
+                            move.toX(),
+                            move.toY()
+                    );
+                })
+                .collect(Collectors.joining(", "));
     }
 
     /**
