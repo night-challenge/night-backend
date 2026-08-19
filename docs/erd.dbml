@@ -1,0 +1,61 @@
+Project night_challenge {
+  database_type: 'MySQL'
+  Note: '나이트의 길 백엔드 ERD — 현재 백엔드 Entity 기준'
+}
+
+Table game_sessions [headercolor: #7F1D1D] {
+  id bigint [pk, increment, not null, note: '게임 세션 고유 식별자']
+  user_id bigint [not null, note: '소유자 식별자. 현재 고정 사용자 1 사용']
+  mode varchar(10) [not null, note: '게임 난이도: EASY / HARD']
+  fen varchar(100) [not null, note: '체스 보드 현재 상태(FEN)']
+  current_turn int [not null, note: '사용자 이동 기준 현재 턴 수']
+  score int [not null, note: '현재 획득 점수']
+  target_score int [not null, note: '난이도별 목표 점수']
+  status varchar(20) [not null, note: 'IN_PROGRESS / WON / LOST']
+  knight_move_log json [not null, note: '사용자 나이트 이동 기록']
+  created_at datetime [not null, note: '생성일시']
+  updated_at datetime [not null, note: '수정일시']
+}
+
+Table night_path_records [headercolor: #7F1D1D] {
+  id bigint [pk, increment, not null, note: '각인 고유 식별자']
+  user_id bigint [not null, note: '소유자 식별자. 현재 고정 사용자 1 사용']
+  game_session_id bigint [not null, unique, note: '원본 게임 ID. JPA FK 없이 논리적으로 연결']
+  constellation_name varchar(255) [not null, note: '각인 이름']
+  keywords json [not null, note: 'AI 분석 키워드 3개']
+  comment text [not null, note: 'AI 분석 코멘트']
+  constellation_data json [not null, note: 'before 원본 궤적과 after 최종 별자리']
+  created_at datetime [not null, note: '생성일시']
+}
+
+Table products [headercolor: #7F1D1D] {
+  id bigint [pk, increment, not null, note: '제품 고유 식별자']
+  category varchar(30) [not null, note: '제품 카테고리']
+  description text [note: '제품 공통 설명']
+}
+
+Table product_options [headercolor: #7F1D1D] {
+  id bigint [pk, increment, not null, note: '제품 옵션 고유 식별자']
+  product_id bigint [not null, note: '소속 제품 ID']
+  option_name varchar(255) [not null, note: '옵션별 제품명']
+  option_label varchar(255) [note: '색상·용량 등 옵션 구분값']
+  price int [not null, note: '옵션별 가격']
+}
+
+Table engraving_requests [headercolor: #7F1D1D] {
+  id bigint [pk, increment, not null, note: '제품 각인 신청 고유 식별자']
+  user_id bigint [not null, note: '신청 사용자 식별자. 현재 고정 사용자 1 사용']
+  product_option_id bigint [not null, note: '신청 대상 제품 옵션 ID']
+  night_path_record_id bigint [not null, note: '신청에 사용한 보유 각인 ID']
+  engraving_color varchar(255) [not null, note: '각인 색상: gold / silver / black']
+  product_code varchar(7) [not null, unique, note: '신청별 고유 제품 코드']
+  status varchar(255) [not null, note: '신청완료 / 취소됨']
+  created_at datetime [not null, note: '신청일시']
+}
+
+Ref: products.id < product_options.product_id
+Ref: product_options.id < engraving_requests.product_option_id
+Ref: night_path_records.id < engraving_requests.night_path_record_id
+
+// 실제 JPA FK는 없으며, 게임 하나에 각인이 없거나 최대 하나만 존재하는 논리적 1 : 0..1 관계
+Ref: game_sessions.id - night_path_records.game_session_id [inactive, color: #7F1D1D]
