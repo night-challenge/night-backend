@@ -23,11 +23,18 @@ class OpenAiPlayAnalyzerTest {
                 .contains("플레이 성향을 표현하는 창작 이름")
                 .contains("키워드 3개를 먼저 선정")
                 .contains("선정한 키워드 3개를 바탕으로 각인 이름과 코멘트를 생성")
-                .contains("앞부분의 글자 수는 제한하지 않되")
+                .contains("'의 궤적' 앞부분은 한글 2~4자의 자연스러운 명사 또는 명사형 표현")
+                .contains("하나의 의미로 자연스럽게 읽히는 표현")
+                .contains("서로 다른 단어를 억지로 결합한 표현이나 띄어쓰기가 포함된 구절은 사용하지 마세요")
+                .contains("완성된 이름이 '의 궤적'과 자연스럽게 연결")
                 .contains("'의 궤적'으로 끝나게")
                 .contains("기물명이나 게임 용어를 이름에 그대로 사용하지 마세요")
                 .contains("'나이트', '체스', '게임', '이동', '경로'")
                 .contains("선정한 플레이 성향 키워드를 바탕으로 이름을 창작")
+                .contains("플레이 성향 표현에 특정 단어를 금지어로 지정하지 마세요")
+                .contains("입력과 무관한 일반적인 이름을 습관적으로 반복하지 마세요")
+                .contains("게임 정보, 점수, 턴 수와 나이트 이동 경로에서 확인되는 특징")
+                .contains("서로 다른 게임 정보와 이동 경로에는 가능한 한 서로 다른 어휘와 표현")
                 .contains("나이트 이동 경로")
                 .contains("keywords, constellationName, comment")
                 .doesNotContain("도전의 궤적", "나이트의 궤적");
@@ -40,10 +47,11 @@ class OpenAiPlayAnalyzerTest {
     @Test
     void promptRequiresDescriptivePoliteComment() {
         assertThat(OpenAiPlayAnalyzer.PROMPT_TEMPLATE)
-                .contains("플레이어에게 직접 이야기하는 자연스러운 한 문장")
+                .contains("완료된 게임의 플레이를 돌아보며 플레이어에게 직접 이야기하는 자연스러운 과거형 존댓말 한 문장")
                 .contains("반드시 '당신은'으로 시작")
-                .contains("존댓말인 '~습니다.' 형태로 끝내세요")
-                .contains("공백과 문장부호를 포함해 약 35~50자")
+                .contains("현재형인 '~합니다.'로 끝내지 마세요")
+                .contains("'~했습니다.' 하나로만 제한하지 말고 자연스러운 과거형 존댓말로 끝내세요")
+                .contains("공백과 문장부호를 포함해 최소 35자 이상, 최대 50자 이하")
                 .contains("게임 정보와 나이트 이동 경로를 바탕으로 플레이 성향을 자연스럽게 해석")
                 .contains("명사형 또는 지나치게 짧은 문장으로 작성하지 마세요");
     }
