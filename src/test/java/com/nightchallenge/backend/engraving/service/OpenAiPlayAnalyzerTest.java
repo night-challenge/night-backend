@@ -25,9 +25,27 @@ class OpenAiPlayAnalyzerTest {
                 .contains("선정한 키워드 3개를 바탕으로 각인 이름과 코멘트를 생성")
                 .contains("앞부분의 글자 수는 제한하지 않되")
                 .contains("'의 궤적'으로 끝나게")
+                .contains("기물명이나 게임 용어를 이름에 그대로 사용하지 마세요")
+                .contains("'나이트', '체스', '게임', '이동', '경로'")
+                .contains("선정한 플레이 성향 키워드를 바탕으로 이름을 창작")
                 .contains("나이트 이동 경로")
                 .contains("keywords, constellationName, comment")
-                .doesNotContain("도전의 궤적");
+                .doesNotContain("도전의 궤적", "나이트의 궤적");
+    }
+
+    /**
+     * 용도: AI 분석 코멘트 형식 규칙 검증.
+     * 코멘트가 충분한 설명을 담은 한 문장의 존댓말로 생성되도록 요구하는지 확인한다.
+     */
+    @Test
+    void promptRequiresDescriptivePoliteComment() {
+        assertThat(OpenAiPlayAnalyzer.PROMPT_TEMPLATE)
+                .contains("플레이어에게 직접 이야기하는 자연스러운 한 문장")
+                .contains("반드시 '당신은'으로 시작")
+                .contains("존댓말인 '~습니다.' 형태로 끝내세요")
+                .contains("공백과 문장부호를 포함해 약 35~50자")
+                .contains("게임 정보와 나이트 이동 경로를 바탕으로 플레이 성향을 자연스럽게 해석")
+                .contains("명사형 또는 지나치게 짧은 문장으로 작성하지 마세요");
     }
 
     /**
