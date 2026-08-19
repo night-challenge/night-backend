@@ -31,6 +31,21 @@ class OpenAiPlayAnalyzerTest {
     }
 
     /**
+     * 용도: AI 분석 키워드 형식 규칙 검증.
+     * 완성된 키워드 예시에 의존하지 않고 짧은 단어 형태와 실제 플레이 반영을 요구하는지 확인한다.
+     */
+    @Test
+    void promptRequiresShortKeywordsWithoutFixedExamples() {
+        assertThat(OpenAiPlayAnalyzer.PROMPT_TEMPLATE)
+                .contains("한글 2~3자의 짧은 단어")
+                .contains("띄어쓰기 없는 명사 또는 형용사 형태")
+                .contains("문장이나 구절 형태로 작성하지 마세요")
+                .contains("실제 게임 정보와 나이트 이동 경로에서 드러난 플레이 특성")
+                .contains("동일한 일반 키워드만 반복적으로 선택하지 마세요")
+                .doesNotContain("공격적", "민첩함", "전략적", "신속", "창의적");
+    }
+
+    /**
      * 용도: 나이트 이동 경로 프롬프트 반영 검증.
      * 기록된 사용자 나이트 이동이 원래 순서와 좌표를 유지한 채 프롬프트에 포함되는지 확인한다.
      */
