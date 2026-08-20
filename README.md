@@ -309,7 +309,7 @@ Knight의 움직임을 Night의 별자리로 연결하는 AI 기반 개인화 �
 - `ProductOption` → `EngravingRequest` : 일대다
 
 > `GameSession`과 `NightPathRecord`는 논리적 1 : 0..1 관계입니다.
-> `game_session_id`는 `NOT NULL`, `UNIQUE`로 관리하지만 실제 JPA 연관관계와 DB 외래 키는 사용하지 않습니다.
+> <br>`game_session_id`는 `NOT NULL`, `UNIQUE`로 관리하지만 실제 JPA 연관관계와 DB 외래 키는 사용하지 않습니다.
 
 ---
 
@@ -459,7 +459,7 @@ Windows
 - **Database** — Railway MySQL
 - **Frontend** — [Vercel](https://night-frontend-rho.vercel.app/)
 
-> Railway 무료 Trial 크레딧으로 운영 중입니다. 크레딧 소진 또는 배포 인시던트로 일시적으로 접속이 안 될 수 있으니, <br>문제 발생 시 [로컬 실행 방법](#-로컬-실행-방법)으로 대체 확인 가능합니다.
+> Railway 무료 Trial 크레딧으로 운영 중입니다. <br>크레딧 소진 또는 배포 인시던트로 일시적으로 접속이 안 될 수 있으니, 문제 발생 시 [로컬 실행 방법](#-로컬-실행-방법)으로 대체 확인 가능합니다.
 
 ---
 
