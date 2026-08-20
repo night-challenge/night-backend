@@ -1,6 +1,6 @@
 <div align="center">
 
-# ♞ 나이트의 길 (Night Challenge) 🌌
+# ♞ 나이트의 길 (Knight Challenge) 🌌
 
 ![나이트의 길 배너](docs/images/banner.png)
 
