@@ -196,15 +196,18 @@ Knight의 움직임을 Night의 별자리로 연결하는 AI 기반 개인화 �
 ---
 
 ## 🧰 기술 스택
-
 <table>
   <tr>
+    <th align="center">PM/Design</th>
     <th align="center">Frontend</th>
     <th align="center">Backend</th>
-    <th align="center">Design</th>
     <th align="center">Collaboration</th>
   </tr>
   <tr>
+    <td valign="top">
+      <img src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white" /><br />
+      <img src="https://img.shields.io/badge/Manyfast-6D5AE0?style=for-the-badge&logoColor=white&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAADdUlEQVR42u2bv2tTURTHv+fe915+NEkFsVVqhSpYFMRJOzi4KS4uHZzEybGDbu7i5qaT/4CLIIKTiz9BioOlQ+lgCy1FS8HGNk2TvNx7HF5ShTbvZ/oSmnvhDYF3k3s+79xzvufcF3p8d4kxwENgwIcBYAAYAAaAAWAAGAAGgAEwqMNKMpko/L0cteIggA7ru7sFoOmG/2UhKRIw3eTQhkmL0gcgBFAcsUM/pWpFwa1zKAjMQL4k4WSCdygD2Ck3oXVKAIi8J186YeP+kzFYtr9FWnuwXj/fwNznbeQLwnexQhKqWwq37h3H5etFaMUQkny98MWjNWxuuLBsirwd4m8BAmyHAt2P2YNGEcOttMgzSAIkyD8Oxd8BybJAGNpxA1R7XtB8TtjOMTrAADAADID+HCn1qq3U7NHRpDNJQCuGVhygM7h3HsDaEzq+V8uAU2cdNHYZJAhCwPcCgOq2hpAEyxEQkjpeTkZEAts1DyAC7EzwL4uWiLlyo4SVxRoWZndCiaCvb8tgzcgVZVt3HTiUYtRrOrLQ2rMjzskQM+BkCBOXchCd8BPAmnFyIoOpm8N7sFYXa6hsqf1PrbWKRo3x5U0Z6ysNKMWhYkEmH98LrLhPv1FnzH+q+K6PCPj2bhurizXceTgKEoTxyWwIDwBePl1HYVhCqwCpyxy7EEq8BXKFYL/LFwkLsztY+1HH+PksVLNzXdAunCzHK521SmbcoWeBMIsTYICAyh/lgfsv0HUqsznF49p0dAAjUaQ2StAAMAAGCwBzsi5PX9YCRP/ksZ+0hgAKw9ILnIK8LNKFbNRTAKy95qUISIFopcCxcxlcnBrC9/cVODn/RicBcHIpK8Go7mxnCB9elaGanoQ+SNwzA4WSxPhkFiQJ0zOjOH0+i1/Lda8p2gGCZsby/C4aIVvuXakF4rh/02W4jeBFXrg6hOmZETjZ8OHp2YNV/F5Puy0e0Qssm2A7/taTIMx9rODMZBbXbh/zto30n6Nc7t3RWFQIQQsVYDhZws+lhvdZkn/MAKAT5rG+S4PMiF3bGyFkABgABoABcJQAhFF2SRstVj8a3q4d2j1Cv9F0OdEpEvXbHybatUO+IMPdj5RfkUnD7d06Y7Pqhp7Tk5ekDhtC0LtH+xooRwlAUqNMGjQADAADwAAwAAwAA8AAMAAMgMDxF2qnQR7QmEuuAAAAAElFTkSuQmCC" /><br />
+    </td>
     <td valign="top">
       <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black" /><br />
       <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" /><br />
@@ -220,9 +223,6 @@ Knight의 움직임을 Night의 별자리로 연결하는 AI 기반 개인화 �
       <img src="https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white" /><br />
       <img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white" /><br />
       <img src="https://img.shields.io/badge/Railway-0B0D0E?style=for-the-badge&logo=railway&logoColor=white" /><br />
-    </td>
-    <td valign="top">
-      <img src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white" /><br />
     </td>
     <td valign="top">
       <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white" /><br />
